@@ -1,0 +1,29 @@
+{
+  "name": "Ваше Имя",
+  "tagline": "Музыкант & IT Специалист",
+  "about": "Расскажите о себе здесь. Откройте админ-панель и заполните этот раздел.",
+  "music": {
+    "title": "Музыка",
+    "description": "Опишите ваше музыкальное направление",
+    "items": []
+  },
+  "it": {
+    "title": "IT",
+    "description": "Опишите ваши IT проекты и навыки",
+    "items": []
+  },
+  "contacts": {
+    "email": "",
+    "telegram": "",
+    "instagram": "",
+    "github": ""
+  },
+  "theme": {
+    "primaryColor": "#6750A4",
+    "secondaryColor": "#625B71",
+    "tertiaryColor": "#7D5260",
+    "backgroundColor": "#FEF7FF",
+    "backgroundImage": "",
+    "useBackgroundImage": false
+  }
+}

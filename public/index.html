@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Портфолио</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <h1 class="logo" id="logo">Портфолио</h1>
+        <div class="nav-links">
+          <a href="#about" class="nav-link">О себе</a>
+          <a href="#music" class="nav-link">Музыка</a>
+          <a href="#it" class="nav-link">IT</a>
+          <a href="#contacts" class="nav-link">Контакты</a>
+          <button class="btn-icon" onclick="window.location.href='admin.html'" aria-label="Admin">
+            <span class="material-icons">admin_panel_settings</span>
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <h1 class="hero-title" id="hero-name">Загрузка...</h1>
+          <p class="hero-subtitle" id="hero-tagline">Загрузка...</p>
+        </div>
+      </div>
+      <div class="hero-bg"></div>
+    </section>
+
+    <section id="about" class="section">
+      <div class="container">
+        <div class="card card-elevated">
+          <h2 class="section-title">О себе</h2>
+          <p class="section-text" id="about-text">Загрузка...</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="music" class="section section-alt">
+      <div class="container">
+        <div class="card card-filled">
+          <h2 class="section-title" id="music-title">Музыка</h2>
+          <p class="section-text" id="music-description">Загрузка...</p>
+          <div class="items-grid" id="music-items"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="it" class="section">
+      <div class="container">
+        <div class="card card-elevated">
+          <h2 class="section-title" id="it-title">IT</h2>
+          <p class="section-text" id="it-description">Загрузка...</p>
+          <div class="items-grid" id="it-items"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contacts" class="section section-alt">
+      <div class="container">
+        <div class="card card-outlined">
+          <h2 class="section-title">Контакты</h2>
+          <div class="contacts-grid" id="contacts-grid">
+            <div class="contact-item">
+              <span class="material-icons">email</span>
+              <a href="#" id="contact-email" class="contact-link">Загрузка...</a>
+            </div>
+            <div class="contact-item">
+              <span class="material-icons">send</span>
+              <a href="#" id="contact-telegram" class="contact-link">Загрузка...</a>
+            </div>
+            <div class="contact-item">
+              <span class="material-icons">photo_camera</span>
+              <a href="#" id="contact-instagram" class="contact-link">Загрузка...</a>
+            </div>
+            <div class="contact-item">
+              <span class="material-icons">code</span>
+              <a href="#" id="contact-github" class="contact-link">Загрузка...</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026. Все права защищены.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

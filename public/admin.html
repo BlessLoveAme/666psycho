@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Админ-панель</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <div id="login-page" class="login-page">
+    <div class="login-card card card-elevated">
+      <h1 class="login-title">Вход в админ-панель</h1>
+      <form id="login-form" class="login-form">
+        <div class="input-group">
+          <label for="username" class="input-label">Логин</label>
+          <input type="text" id="username" class="input" required>
+        </div>
+        <div class="input-group">
+          <label for="password" class="input-label">Пароль</label>
+          <input type="password" id="password" class="input" required>
+        </div>
+        <div id="login-error" class="error-message"></div>
+        <button type="submit" class="btn btn-primary">Войти</button>
+        <button type="button" class="btn btn-text" onclick="window.location.href='index.html'">Назад на сайт</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="admin-page" class="admin-page" style="display: none;">
+    <header class="header">
+      <div class="container">
+        <nav class="nav">
+          <h1 class="logo">Админ-панель</h1>
+          <div class="nav-links">
+            <button class="btn btn-text" onclick="window.location.href='index.html'">Просмотр сайта</button>
+            <button class="btn btn-outlined" id="logout-btn">Выйти</button>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container admin-content">
+      <form id="admin-form" class="admin-form">
+        <div class="card card-elevated admin-section">
+          <h2 class="section-title">Основная информация</h2>
+          <div class="input-group">
+            <label for="name" class="input-label">Имя</label>
+            <input type="text" id="name" class="input" required>
+          </div>
+          <div class="input-group">
+            <label for="tagline" class="input-label">Подзаголовок</label>
+            <input type="text" id="tagline" class="input" required>
+          </div>
+          <div class="input-group">
+            <label for="about" class="input-label">О себе</label>
+            <textarea id="about" class="textarea" rows="4" required></textarea>
+          </div>
+        </div>
+
+        <div class="card card-filled admin-section">
+          <h2 class="section-title">Музыка</h2>
+          <div class="input-group">
+            <label for="music-title" class="input-label">Заголовок</label>
+            <input type="text" id="music-title" class="input" required>
+          </div>
+          <div class="input-group">
+            <label for="music-description" class="input-label">Описание</label>
+            <textarea id="music-description" class="textarea" rows="3" required></textarea>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Элементы (по одному на строку)</label>
+            <textarea id="music-items" class="textarea" rows="4" placeholder="Например:&#10;Электронная музыка&#10;Саундтреки&#10;Экспериментальная музыка"></textarea>
+          </div>
+        </div>
+
+        <div class="card card-elevated admin-section">
+          <h2 class="section-title">IT</h2>
+          <div class="input-group">
+            <label for="it-title" class="input-label">Заголовок</label>
+            <input type="text" id="it-title" class="input" required>
+          </div>
+          <div class="input-group">
+            <label for="it-description" class="input-label">Описание</label>
+            <textarea id="it-description" class="textarea" rows="3" required></textarea>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Элементы (по одному на строку)</label>
+            <textarea id="it-items" class="textarea" rows="4" placeholder="Например:&#10;Веб-разработка&#10;Python/Node.js&#10;DevOps"></textarea>
+          </div>
+        </div>
+
+        <div class="card card-outlined admin-section">
+          <h2 class="section-title">Контакты</h2>
+          <div class="input-group">
+            <label for="email" class="input-label">Email</label>
+            <input type="email" id="email" class="input">
+          </div>
+          <div class="input-group">
+            <label for="telegram" class="input-label">Telegram</label>
+            <input type="text" id="telegram" class="input" placeholder="@username">
+          </div>
+          <div class="input-group">
+            <label for="instagram" class="input-label">Instagram</label>
+            <input type="text" id="instagram" class="input" placeholder="@username">
+          </div>
+          <div class="input-group">
+            <label for="github" class="input-label">GitHub</label>
+            <input type="text" id="github" class="input" placeholder="username">
+          </div>
+        </div>
+
+        <div class="card card-filled admin-section">
+          <h2 class="section-title">Тема и дизайн</h2>
+          <div class="input-group">
+            <label for="primary-color" class="input-label">Основной цвет</label>
+            <div class="color-input-wrapper">
+              <input type="color" id="primary-color" class="color-input" value="#6750A4">
+              <input type="text" id="primary-color-text" class="input" value="#6750A4" style="flex: 1;">
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="secondary-color" class="input-label">Второстепенный цвет</label>
+            <div class="color-input-wrapper">
+              <input type="color" id="secondary-color" class="color-input" value="#625B71">
+              <input type="text" id="secondary-color-text" class="input" value="#625B71" style="flex: 1;">
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="tertiary-color" class="input-label">Дополнительный цвет</label>
+            <div class="color-input-wrapper">
+              <input type="color" id="tertiary-color" class="color-input" value="#7D5260">
+              <input type="text" id="tertiary-color-text" class="input" value="#7D5260" style="flex: 1;">
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="background-color" class="input-label">Цвет фона</label>
+            <div class="color-input-wrapper">
+              <input type="color" id="background-color" class="color-input" value="#FEF7FF">
+              <input type="text" id="background-color-text" class="input" value="#FEF7FF" style="flex: 1;">
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="background-image" class="input-label">Фоновое изображение</label>
+            <input type="file" id="background-image" class="input" accept="image/*">
+            <div id="background-preview" style="margin-top: 8px;"></div>
+          </div>
+          <div class="input-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="use-background-image">
+              <span>Использовать фоновое изображение</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="admin-actions">
+          <button type="submit" class="btn btn-primary btn-large">Сохранить изменения</button>
+          <div id="save-message" class="success-message"></div>
+        </div>
+      </form>
+
+      <div class="card card-outlined admin-section" style="margin-top: 32px;">
+        <h2 class="section-title">Смена пароля</h2>
+        <form id="password-form" class="password-form">
+          <div class="input-group">
+            <label for="current-password" class="input-label">Текущий пароль</label>
+            <input type="password" id="current-password" class="input" required>
+          </div>
+          <div class="input-group">
+            <label for="new-password" class="input-label">Новый пароль</label>
+            <input type="password" id="new-password" class="input" required minlength="4">
+          </div>
+          <div class="input-group">
+            <label for="confirm-password" class="input-label">Подтвердите новый пароль</label>
+            <input type="password" id="confirm-password" class="input" required minlength="4">
+          </div>
+          <div id="password-message" class="success-message"></div>
+          <button type="submit" class="btn btn-primary">Изменить пароль</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
