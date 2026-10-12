@@ -1,6 +1,6 @@
 # Portfolio Site
 
-Сайт-визитка с админ-панелью. Material Design 3 Expressive. Направления: музыка и IT.
+Сайт-визитка с админ-панелью. Material Design 3 Expressive. 
 
 ## Локальный запуск
 
