@@ -1,30 +1,29 @@
 const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
-const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, 'public', 'uploads');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + '-' + file.originalname;
-    cb(null, uniqueName);
-  }
-});
+// Vercel KV - only import if available
+let kv = null;
+try {
+  kv = require('@vercel/kv').kv;
+} catch (e) {
+  console.log('Running in local mode without Vercel KV');
+}
 
+// Use in-memory storage for local development
+const localStorage = {
+  content: null,
+  users: null
+};
+
+// Configure multer for file uploads (memory storage for Vercel)
 const upload = multer({ 
-  storage: storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
@@ -40,76 +39,98 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
-  secret: 'change-this-secret-in-production',
+  secret: process.env.SESSION_SECRET || 'change-this-secret-in-production',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
+  cookie: { 
+    maxAge: 24 * 60 * 60 * 1000,
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true
+  }
 }));
 
-// Data file paths
-const DATA_DIR = path.join(__dirname, 'data');
-const CONTENT_FILE = path.join(DATA_DIR, 'content.json');
-const USERS_FILE = path.join(DATA_DIR, 'users.json');
+// Default content
+const defaultContent = {
+  name: "Ваше Имя",
+  tagline: "Музыкант & IT Специалист",
+  about: "Расскажите о себе здесь. Откройте админ-панель и заполните этот раздел.",
+  music: {
+    title: "Музыка",
+    description: "Опишите ваше музыкальное направление",
+    items: []
+  },
+  it: {
+    title: "IT",
+    description: "Опишите ваши IT проекты и навыки",
+    items: []
+  },
+  contacts: {
+    email: "",
+    telegram: "",
+    instagram: "",
+    github: ""
+  },
+  theme: {
+    primaryColor: "#6750A4",
+    secondaryColor: "#625B71",
+    tertiaryColor: "#7D5260",
+    backgroundColor: "#FEF7FF",
+    backgroundImage: "",
+    useBackgroundImage: false
+  }
+};
 
-// Initialize data directory
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR);
-}
-
-// Initialize default content
-if (!fs.existsSync(CONTENT_FILE)) {
-  const defaultContent = {
-    name: "Ваше Имя",
-    tagline: "Музыкант & IT Специалист",
-    about: "Расскажите о себе здесь",
-    music: {
-      title: "Музыка",
-      description: "Опишите ваше музыкальное направление",
-      items: []
-    },
-    it: {
-      title: "IT",
-      description: "Опишите ваши IT проекты и навыки",
-      items: []
-    },
-    contacts: {
-      email: "",
-      telegram: "",
-      instagram: "",
-      github: ""
-    },
-    theme: {
-      primaryColor: "#6750A4",
-      secondaryColor: "#625B71",
-      tertiaryColor: "#7D5260",
-      backgroundColor: "#FEF7FF",
-      backgroundImage: "",
-      useBackgroundImage: false
+// Helper functions for data access
+async function readContent() {
+  if (kv) {
+    const content = await kv.get('content');
+    return content || defaultContent;
+  } else {
+    // Local mode
+    if (!localStorage.content) {
+      localStorage.content = defaultContent;
     }
-  };
-  fs.writeFileSync(CONTENT_FILE, JSON.stringify(defaultContent, null, 2));
+    return localStorage.content;
+  }
 }
 
-// Initialize default admin user (admin/admin)
-if (!fs.existsSync(USERS_FILE)) {
-  const hashedPassword = bcrypt.hashSync('admin', 10);
-  const defaultUsers = {
-    admin: hashedPassword
-  };
-  fs.writeFileSync(USERS_FILE, JSON.stringify(defaultUsers, null, 2));
+async function writeContent(content) {
+  if (kv) {
+    await kv.set('content', content);
+  } else {
+    // Local mode
+    localStorage.content = content;
+  }
 }
 
-// Helper functions
-function readContent() {
-  return JSON.parse(fs.readFileSync(CONTENT_FILE, 'utf8'));
+async function readUsers() {
+  if (kv) {
+    const users = await kv.get('users');
+    if (!users) {
+      // Initialize default user
+      const hashedPassword = bcrypt.hashSync('admin', 10);
+      const defaultUsers = { admin: hashedPassword };
+      await kv.set('users', defaultUsers);
+      return defaultUsers;
+    }
+    return users;
+  } else {
+    // Local mode
+    if (!localStorage.users) {
+      const hashedPassword = bcrypt.hashSync('admin', 10);
+      localStorage.users = { admin: hashedPassword };
+    }
+    return localStorage.users;
+  }
 }
 
-function writeContent(content) {
-  fs.writeFileSync(CONTENT_FILE, JSON.stringify(content, null, 2));
-}
-
-function readUsers() {
-  return JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'));
+async function writeUsers(users) {
+  if (kv) {
+    await kv.set('users', users);
+  } else {
+    // Local mode
+    localStorage.users = users;
+  }
 }
 
 // Auth middleware
@@ -122,24 +143,30 @@ function requireAuth(req, res, next) {
 }
 
 // Routes
-app.get('/api/content', (req, res) => {
+app.get('/api/content', async (req, res) => {
   try {
-    const content = readContent();
+    const content = await readContent();
     res.json(content);
   } catch (error) {
+    console.error('Error loading content:', error);
     res.status(500).json({ error: 'Failed to load content' });
   }
 });
 
-app.post('/api/login', (req, res) => {
-  const { username, password } = req.body;
-  const users = readUsers();
-  
-  if (users[username] && bcrypt.compareSync(password, users[username])) {
-    req.session.user = username;
-    res.json({ success: true });
-  } else {
-    res.status(401).json({ error: 'Invalid credentials' });
+app.post('/api/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const users = await readUsers();
+    
+    if (users[username] && bcrypt.compareSync(password, users[username])) {
+      req.session.user = username;
+      res.json({ success: true });
+    } else {
+      res.status(401).json({ error: 'Invalid credentials' });
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Login failed' });
   }
 });
 
@@ -152,10 +179,10 @@ app.get('/api/check-auth', (req, res) => {
   res.json({ authenticated: !!req.session.user });
 });
 
-app.post('/api/content', requireAuth, (req, res) => {
+app.post('/api/content', requireAuth, async (req, res) => {
   try {
-    console.log('Saving content:', JSON.stringify(req.body, null, 2));
-    writeContent(req.body);
+    console.log('Saving content...');
+    await writeContent(req.body);
     res.json({ success: true });
   } catch (error) {
     console.error('Error saving content:', error);
@@ -163,24 +190,28 @@ app.post('/api/content', requireAuth, (req, res) => {
   }
 });
 
-app.post('/api/upload-background', requireAuth, upload.single('background'), (req, res) => {
+app.post('/api/upload-background', requireAuth, upload.single('background'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
-    const fileUrl = '/uploads/' + req.file.filename;
-    res.json({ success: true, url: fileUrl });
+    
+    // Convert image to base64 data URL
+    const base64Image = req.file.buffer.toString('base64');
+    const dataUrl = `data:${req.file.mimetype};base64,${base64Image}`;
+    
+    res.json({ success: true, url: dataUrl });
   } catch (error) {
     console.error('Upload error:', error);
     res.status(500).json({ error: 'Failed to upload file' });
   }
 });
 
-app.post('/api/change-password', requireAuth, (req, res) => {
+app.post('/api/change-password', requireAuth, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
     const username = req.session.user;
-    const users = readUsers();
+    const users = await readUsers();
     
     if (!users[username]) {
       return res.status(400).json({ error: 'User not found' });
@@ -195,16 +226,22 @@ app.post('/api/change-password', requireAuth, (req, res) => {
     }
     
     users[username] = bcrypt.hashSync(newPassword, 10);
-    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+    await writeUsers(users);
     
     res.json({ success: true });
   } catch (error) {
     console.error('Password change error:', error);
-    res.status(500).json({ error: 'Failed to change password' });
+    res.status(500).json({ error: 'Failed to change password', details: error.message });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`Default login: admin / admin`);
-});
+// Only start server if not in Vercel
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Default login: admin / admin`);
+  });
+}
+
+// Export for Vercel
+module.exports = app;
